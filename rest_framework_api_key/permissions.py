@@ -11,7 +11,7 @@ if typing.TYPE_CHECKING:
 
 
 class KeyParser:
-    def get(self, request: HttpRequest) -> typing.Optional[str]:
+    def get(self, request):  # type(HttpRequest) -> typing.Optional[str]
         custom_header = getattr(settings, "API_KEY_CUSTOM_HEADER", None)
 
         if custom_header is not None:
@@ -19,7 +19,9 @@ class KeyParser:
 
         return self.get_from_authorization(request)
 
-    def get_from_authorization(self, request: HttpRequest) -> typing.Optional[str]:
+    def get_from_authorization(
+        self, request
+    ):  # type(HttpRequest) -> typing.Optional[str]
         authorization = request.META.get("HTTP_AUTHORIZATION")
 
         if not authorization:
@@ -32,7 +34,9 @@ class KeyParser:
 
         return key
 
-    def get_from_header(self, request: HttpRequest, name: str) -> typing.Optional[str]:
+    def get_from_header(
+        self, request, name
+    ):  # # type(HttpRequest, str) -> typing.Optional[str]
         return request.META.get(name) or None
 
 
@@ -40,10 +44,10 @@ class BaseHasAPIKey(permissions.BasePermission):
     model = None  # type: typing.Type[models.Model]
     key_parser = KeyParser()
 
-    def get_key(self, request: HttpRequest) -> typing.Optional[str]:
+    def get_key(self, request):  # type(HttpRequest) -> typing.Optional[str]
         return self.key_parser.get(request)
 
-    def has_permission(self, request: HttpRequest, view: typing.Any) -> bool:
+    def has_permission(self, request, view):  # type(HttpRequest, typing.Any) -> bool
         assert self.model is not None, (
             "%s must define `.model` with the API key model to use"
             % self.__class__.__name__
@@ -54,8 +58,8 @@ class BaseHasAPIKey(permissions.BasePermission):
         return self.model.objects.is_valid(key)
 
     def has_object_permission(
-        self, request: HttpRequest, view: typing.Any, obj: AbstractAPIKey
-    ) -> bool:
+        self, request, view, obj
+    ):  # type(HttpRequest, typing.Any, AbstractAPIKey) -> bool
         return self.has_permission(request, view)
 
 

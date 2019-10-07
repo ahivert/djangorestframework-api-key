@@ -16,7 +16,9 @@ class Hero(models.Model):
 
 class HeroAPIKeyManager(BaseAPIKeyManager):
     def get_usable_keys(self):
-        return super().get_usable_keys().filter(hero__retired=False)
+        return (
+            super(HeroAPIKeyManager, self).get_usable_keys().filter(hero__retired=False)
+        )
 
 
 class HeroAPIKey(AbstractAPIKey):

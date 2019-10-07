@@ -34,7 +34,7 @@ def test_if_no_api_key_then_permission_denied(create_request, view):
     assert response.status_code == 403
 
 
-def _scramble_prefix(key: str) -> str:
+def _scramble_prefix(key):  # type(str) -> str:
     prefix, _, secret_key = key.partition(".")
     truncated_prefix = prefix[:-1]
     return truncated_prefix + "." + secret_key

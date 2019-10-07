@@ -16,7 +16,7 @@ from .project.heroes.models import Hero, HeroAPIKey
 
 
 @pytest.fixture(name="req")
-def fixture_req(rf: RequestFactory):
+def fixture_req(rf):  # type(RequestFactory)
     messages = MessageMiddleware()
     sessions = SessionMiddleware()
     request = rf.post("/")

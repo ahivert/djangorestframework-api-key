@@ -10,7 +10,7 @@ from .crypto import concatenate, KeyGenerator, split
 class BaseAPIKeyManager(models.Manager):
     key_generator = KeyGenerator()
 
-    def assign_key(self, obj: "AbstractAPIKey") -> str:
+    def assign_key(self, obj):  # tupe("AbstractAPIKey") -> str
         try:
             key, prefix, hashed_key = self.key_generator.generate()
         except ValueError:  # Compatibility with < 1.4
@@ -26,7 +26,7 @@ class BaseAPIKeyManager(models.Manager):
 
         return key
 
-    def create_key(self, **kwargs) -> Tuple["AbstractAPIKey", str]:
+    def create_key(self, **kwargs):  #  type() -> Tuple["AbstractAPIKey", str]
         # Prevent from manually setting the primary key.
         kwargs.pop("id", None)
         obj = self.model(**kwargs)  # type: AbstractAPIKey
@@ -34,10 +34,10 @@ class BaseAPIKeyManager(models.Manager):
         obj.save()
         return obj, key
 
-    def get_usable_keys(self) -> models.QuerySet:
+    def get_usable_keys(self):  # type() -> models.QuerySet
         return self.filter(revoked=False)
 
-    def is_valid(self, key: str) -> bool:
+    def is_valid(self, key):  # type(str) -> bool
         prefix, _, _ = key.partition(".")
 
         queryset = self.get_usable_keys()
@@ -99,11 +99,11 @@ class AbstractAPIKey(models.Model):
         verbose_name_plural = "API keys"
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(AbstractAPIKey, self).__init__(*args, **kwargs)
         # Store the initial value of `revoked` to detect changes.
         self._initial_revoked = self.revoked
 
-    def _has_expired(self) -> bool:
+    def _has_expired(self):  # type() -> bool
         if self.expiry_date is None:
             return False
         return self.expiry_date < timezone.now()
@@ -112,7 +112,7 @@ class AbstractAPIKey(models.Model):
     _has_expired.boolean = True  # type: ignore
     has_expired = property(_has_expired)
 
-    def is_valid(self, key: str) -> bool:
+    def is_valid(self, key):  # type(str) -> bool:
         return type(self).objects.key_generator.verify(key, self.hashed_key)
 
     def clean(self):
@@ -120,7 +120,7 @@ class AbstractAPIKey(models.Model):
 
     def save(self, *args, **kwargs):
         self._validate_revoked()
-        super().save(*args, **kwargs)
+        super(AbstractAPIKey, self).save(*args, **kwargs)
 
     def _validate_revoked(self):
         if self._initial_revoked and not self.revoked:
@@ -128,7 +128,7 @@ class AbstractAPIKey(models.Model):
                 "The API key has been revoked, which cannot be undone."
             )
 
-    def __str__(self) -> str:
+    def __str__(self):  # type() -> str
         return str(self.name)
 
 

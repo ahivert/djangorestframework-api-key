@@ -18,14 +18,16 @@ class APIKeyModelAdmin(admin.ModelAdmin):
     search_fields = ("name", "prefix")
 
     def get_readonly_fields(
-        self, request, obj: APIKey = None
-    ) -> typing.Tuple[str, ...]:
+        self, request, obj=None
+    ):  #  type(APIKey) -> typing.Tuple[str, ...]
         fields = ("prefix",)  # type: typing.Tuple[str, ...]
         if obj is not None and obj.revoked:
             fields = fields + ("name", "revoked", "expiry_date")
         return fields
 
-    def save_model(self, request, obj: APIKey, form=None, change: bool = False):
+    def save_model(
+        self, request, obj=APIKey, form=None, change=False
+    ):  # type(APIKey, None, bool)
         created = not obj.pk
 
         if created:

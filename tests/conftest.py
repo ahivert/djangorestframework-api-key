@@ -86,7 +86,7 @@ def _create_user():
         },
     ],
 )
-def fixture_key_header_config(request) -> dict:
+def fixture_key_header_config(request):  # type: () -> dict:
     config = request.param
 
     if config.get("set_custom_header_setting"):
@@ -99,17 +99,19 @@ def fixture_key_header_config(request) -> dict:
 
 
 @pytest.fixture(name="build_create_request")
-def fixture_build_create_request(key_header_config: dict):
+def fixture_build_create_request(key_header_config):  # type: (dict)
     from rest_framework.test import APIRequestFactory, force_authenticate
     from rest_framework_api_key.models import AbstractAPIKey
 
-    def build_create_request(model: typing.Type[AbstractAPIKey]):
+    def build_create_request(model):  # type: (typing.Type[AbstractAPIKey])
         request_factory = APIRequestFactory()
 
         _MISSING = object()
 
         def create_request(
-            authenticated: bool = False, authorization: str = _MISSING, **kwargs
+            authenticated=False,  # type: bool
+            authorization=_MISSING,  # type: str
+            **kwargs
         ):
             headers = {}
 
@@ -139,7 +141,7 @@ def fixture_build_create_request(key_header_config: dict):
 
 
 @pytest.fixture(name="create_request")
-def fixture_create_request(build_create_request) -> HttpRequest:
+def fixture_create_request(build_create_request):  # type: () -> HttpRequest
     from rest_framework_api_key.models import APIKey
 
     return build_create_request(APIKey)
